@@ -1,0 +1,55 @@
+@font-face {
+	font-family: 'Open Sans Light';
+	src: url('open-sans.light.ttf') format('truetype');
+}
+
+body {
+/*	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; */
+	font-family: 'Open Sans Light', sans-serif;
+	font-size: 12pt;
+	font-weight: normal;
+}
+
+@media only screen and (min-width: 1200px) {
+	#page {
+		position: relative;
+		left: 50%;
+		margin-left: -600px;
+		margin-bottom: 50px;
+		width: 1200px;
+		background-color: #EEE;
+	}
+
+	#chatInput {
+		position: fixed;
+		left: 50%;
+		margin-left: -600px;
+		bottom: 10px;
+		width: 1200px;
+	}
+}
+
+@media only screen and (max-width: 1199px) {
+	#page {
+		width: 100%;
+		position: relative;
+		margin-bottom: 50px;
+		background-color: #EEE;
+	}
+
+	#chatInput {
+		position: fixed;
+		bottom: 10px;
+		width: 95%
+	}
+}
+
+input {
+	border:1px solid #aaa;
+	font-size: 14pt;
+	width: 100%;
+}
+
+ul {
+	list-style-type: none;
+}

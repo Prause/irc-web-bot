@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>erik - chat</title>
+		<meta charset="utf-8">
+		<link rel="shortcut icon" type="image/png" href="thick_bg.png" />
+		<link rel="stylesheet" type="text/css" href="chat.css" />
+	</head>
+
+	<body>
+		<div id="page">
+			<ul id="chatLog"></ul>	
+			<div id="stateMsg"></div>
+		</div>
+		<div id="chatInput">
+			<form id="chatForm">
+				<input type="text" id="chat" placeholder="type and press enter to chat" autofocus/>
+			</form>
+		</div>
+
+	<script>
+	state = document.getElementById('stateMsg');
+	chatLog = document.getElementById('chatLog');
+	chat = document.getElementById('chat');
+	form = document.getElementById('chatForm');
+//		state.innerHTML = "blub";
+
+		if (window.MozWebSocket) {
+			  window.WebSocket = window.MozWebSocket;
+		}
+
+	function onLoad()
+	{
+		var wsURI = "ws://erik.zankt.net:40404";
+		chatLog.innerHTML = chatLog.innerHTML + "<li>Websocket loaded</li>";
+	 
+		websocket = new WebSocket(wsURI);
+		websocket.onopen = function(evt) { onOpen(evt) };
+		websocket.onclose = function(evt) { onClose(evt) };
+		websocket.onmessage = function(evt) { onMessage(evt) };
+		websocket.onerror = function(evt) { onError(evt) };
+	}
+
+function onOpen(evt)
+{
+//    state.className = "success";
+	chatLog.innerHTML = chatLog.innerHTML + "<li>Connected to server.</li>";
+	chatLog.innerHTML = chatLog.innerHTML + "<li>Please type your name to start conversation:</li>";
+	chat.placeholder="please type your name";
+}
+  
+function onClose(evt)
+{
+//    state.className = "fail";
+	chatLog.innerHTML = chatLog.innerHTML + "<li>Disconnected</li>";
+//   connected.innerHTML = "0";	
+}
+ 
+function onMessage(evt)
+{
+    // There are two types of messages: 
+    //     1. a chat participant message itself
+    //     2. a message with a number of connected chat participants. 
+
+	var message = evt.data;
+//	state.innerHTML = "Got message";
+//	state.innerHTML = message;
+
+	chatLog.innerHTML = chatLog.innerHTML + "<li>" + message + "</li>" + "\n";
+//	document.scrollTop = document.scrollHeight;
+	window.scrollTo(0,document.body.scrollHeight);
+	
+    if (message.startsWith("log:"))
+    {
+        message = message.slice("log:".length);
+//        log.innerHTML = '<li class="message">' + message + "</li>" + log.innerHTML;	
+    }
+    else if (message.startsWith("connected:"))
+    {
+        message = message.slice("connected:".length);
+//        connected.innerHTML = message;	
+	}    
+}
+ 
+function onError(evt)
+{ 
+//    state.className = "fail";
+	chatLog.innerHTML = chatLog.innerHTML + "<li>Communication error</li>";
+}
+
+function sendMessage()
+{
+    var message = chat.value;
+	chat.placeholder="type and press enter to chat";
+     
+    chat.value = "";
+	  
+//	chatLog.innerHTML = chatLog.innerHTML + "<li>Sent message</li>" + "\n";
+//	var elem = document.getElementById('html');
+//	document.scrollTop = document.scrollHeight;
+	websocket.send(message);
+}
+
+	chat.addEventListener("keypress", function(evt) {
+		if (evt.keyCode == 13) {
+			evt.preventDefault();
+			sendMessage();
+		}
+	}, false);
+
+
+
+	if (window.WebSocket === undefined)
+	{
+		chatLog.innerHTML = "<li>Sockets not supported. Get a new(er) browser!</li>";
+	}
+	else
+	{
+		chatLog.innerHTML = "<li>Sockets supported.</li>";
+		window.addEventListener("load", onLoad, false);
+	}
+	</script>
+
+	</body>
+</html>
