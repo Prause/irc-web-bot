@@ -46,24 +46,24 @@ void IRCClient::putLine( std::string msg )
 std::string IRCClient::getLine()
 {
 	if( !isGood() ) return "";
-	else std::cout << "reading" << std::endl;
+//	else std::cout << "reading" << std::endl;
 
 	int n = 0;
 	char cBuffer[1024];
 
-	while( ! myBuffer.contains( '\n' ) )
+	while( ! myBuffer.contains( '\n' ) ) // TODO sensitivity for eof -> close connection
 	{
-		std::cout << "read..." << std::endl;
+//		std::cout << "read..." << std::endl;
 		n = read( mySocket, cBuffer, 1024 );
-		std::cout << "@@@ " << cBuffer << std::endl;
+//		std::cout << "@@@ " << cBuffer << std::endl;
 		myBuffer.append( cBuffer, n );
-		std::cout << "...done" << std::endl;
+//		std::cout << "...done" << std::endl;
 	}
 
 	std::string retVal = myBuffer.getLine();
 	while( retVal.size() > 0 )
 	{
-		std::cout << "### " << retVal;
+//		std::cout << "### " << retVal;
 		if( retVal.compare( 0, 4, "PING" ) == 0 )
 		{
 			if( write( mySocket, "PONG\r\n", 6 ) == -1 )

@@ -12,6 +12,7 @@ class ChatServer : public TCPSocketServer
 {
 	std::list<WebSocketConnection*> participants;
 	IRCClient ircConnection;
+	std::list<std::string> msgLog;
 
 	public:
 	ChatServer( unsigned int portNo );

@@ -1,4 +1,5 @@
 #include <string>
+#include <list>
 
 #include "CharBuffer.h"
 

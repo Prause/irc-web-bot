@@ -64,6 +64,12 @@ void ChatServer::participantLoop( int connection_fd )
 		}
 		if( newConnection.isGood() ) // => partName is not empty
 		{
+			// get message history
+			for( auto it = msgLog.begin(); it != msgLog.end(); it++ )
+			{
+				// TODO thread safety
+				newConnection.putLine( *it );
+			}
 			participants.push_back(&newConnection);
 			notifyParticipants( partName, 1 );
 			while( newConnection.isGood() ) {
@@ -124,6 +130,9 @@ void ChatServer::notifyParticipants( std::string name, std::string msg )
 	struct tm* timeinfo = localtime(&rawtime);
 	char buff[9];
 	strftime( buff, 9, "(%R) ", timeinfo);
+
+	msgLog.push_back( buff + name + ": " + msg );
+	if( msgLog.size() > 10 ) msgLog.pop_front();
 
 	// TODO mutexify
 	for( auto it = participants.begin(); it != participants.end(); it++ )
