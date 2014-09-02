@@ -21,6 +21,7 @@ class ChatServer : public TCPSocketServer
 	void listeningLoop();
 
 	private:
+	void addLogLine( std::string msg );
 	void participantLoop( int connection_fd );
 	void notifyIRC( std::string name, std::string msg );
 	void notifyParticipants( std::string name, std::string msg );

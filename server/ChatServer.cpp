@@ -2,10 +2,30 @@
 
 #include <iostream>
 #include <thread>
+#include <fstream>
 
 ChatServer::ChatServer( unsigned int portNo )
 	: TCPSocketServer( portNo )
 {}
+
+void ChatServer::addLogLine( std::string msg )
+{
+	// save to message queue (10 messages capacity)
+	msgLog.push_back( msg );
+	if( msgLog.size() > 10 )
+	{
+		msgLog.pop_front();
+	}
+
+	// also write to logfile
+	std::ofstream file;
+	file.open( "RobotLog.txt", std::ofstream::app );
+	if( file.good() )
+	{
+		file << msg << std::endl;
+	}
+	file.close();
+}
 
 bool ChatServer::connect()
 {
@@ -115,6 +135,8 @@ void ChatServer::notifyParticipants( std::string msg )
 	char buff[9];
 	strftime( buff, 9, "(%R) ", timeinfo);
 
+	addLogLine( buff + msg );
+
 	// TODO mutexify
 	for( auto it = participants.begin(); it != participants.end(); it++ )
 	{
@@ -131,8 +153,7 @@ void ChatServer::notifyParticipants( std::string name, std::string msg )
 	char buff[9];
 	strftime( buff, 9, "(%R) ", timeinfo);
 
-	msgLog.push_back( buff + name + ": " + msg );
-	if( msgLog.size() > 10 ) msgLog.pop_front();
+	addLogLine( buff + name + ": " + msg );
 
 	// TODO mutexify
 	for( auto it = participants.begin(); it != participants.end(); it++ )
