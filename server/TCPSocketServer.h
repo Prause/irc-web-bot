@@ -9,10 +9,10 @@ class TCPSocketServer {
 		int socket_fd; // socket file descriptor (for listening for incoming connections)
 
 	public:
-		TCPSocketServer(unsigned int portNo);
+		TCPSocketServer();
 		~TCPSocketServer();
 
-		bool connect();
+		bool connect( unsigned int portNo );
 		int listenForIncoming();
 
 		void close();

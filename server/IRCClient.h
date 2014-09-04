@@ -8,6 +8,7 @@ class IRCClient
 	private:
 		CharBuffer myBuffer;
 		int mySocket;
+		std::string channel;
 
 	public:
 		IRCClient();
@@ -19,5 +20,10 @@ class IRCClient
 		void putLine( std::string msg );
 		std::string getLine();
 
-		int connectChannel(std::string name);
+		int connectChannel(
+				std::string serverIP,
+				int port,
+				std::string channel,
+				std::string nickName
+		);
 };

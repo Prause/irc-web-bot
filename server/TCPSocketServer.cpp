@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <cstring>
 
-TCPSocketServer::TCPSocketServer(unsigned int portNo)
-	: portNo(portNo), socket_fd(-1)
+TCPSocketServer::TCPSocketServer()
+	: portNo(0), socket_fd(-1)
 {
 }
 
@@ -17,8 +17,10 @@ TCPSocketServer::~TCPSocketServer()
 	close();
 }
 
-bool TCPSocketServer::connect()
+bool TCPSocketServer::connect( unsigned int portNo )
 {
+	this->portNo = portNo;
+
 	// open socket
 	socket_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (socket_fd < 0)

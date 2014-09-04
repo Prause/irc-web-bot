@@ -5,6 +5,7 @@
 		<meta charset="utf-8">
 		<link rel="shortcut icon" type="image/png" href="thick_bg.png" />
 		<link rel="stylesheet" type="text/css" href="chat.css" />
+		<script type="text/javascript" src="config.js"></script>
 	</head>
 
 	<body>
@@ -31,7 +32,7 @@
 
 	function onLoad()
 	{
-		var wsURI = "ws://erik.zankt.net:40404";
+		var wsURI = "ws://" + wsServerAddr + ":" + wsServerPort;
 		chatLog.innerHTML = chatLog.innerHTML + "<li>Websocket loaded</li>";
 	 
 		websocket = new WebSocket(wsURI);

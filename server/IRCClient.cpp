@@ -10,6 +10,7 @@
 
 IRCClient::IRCClient()
 {
+	channel = "";
 	mySocket = -1;
 }
 
@@ -33,7 +34,7 @@ void IRCClient::putLine( std::string msg )
 {
 	if( !isGood() ) return;
 	msg = msg + "\r\n";
-	msg = "PRIVMSG #m6 :" + msg + "\r\n";
+	msg = "PRIVMSG " + channel + " :" + msg + "\r\n";
 
 	if( write( mySocket, msg.c_str(), msg.size() ) == -1 )
 	{
@@ -72,10 +73,11 @@ std::string IRCClient::getLine()
 			}
 		}
 
-		std::size_t found = retVal.find(" PRIVMSG #m6 :");
+		std::string preamble = " PRIVMSG " + channel + " :";
+		std::size_t found = retVal.find( preamble );
 		if( found != std::string::npos )
 		{
-			std::string message = retVal.substr( found + 14 );
+			std::string message = retVal.substr( found + preamble.size() );
 			found = retVal.find("!");
 			std::string sender = retVal.substr( 1, found - 1 );
 			return (sender + ": " + message);
@@ -86,8 +88,14 @@ std::string IRCClient::getLine()
 	return "";
 }
 
-int IRCClient::connectChannel( std::string name )
+int IRCClient::connectChannel(
+		std::string serverIP,
+		int port,
+		std::string channel,
+		std::string nickName )
 {
+	this->channel = channel;
+
 	mySocket = socket(AF_INET, SOCK_STREAM, 0);
 	if( mySocket == -1 )
 	{
@@ -97,8 +105,8 @@ int IRCClient::connectChannel( std::string name )
 
 	struct sockaddr_in serv_addr;
 	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(6667);
-	serv_addr.sin_addr.s_addr = inet_addr("193.196.36.22");
+	serv_addr.sin_port = htons( port );
+	serv_addr.sin_addr.s_addr = inet_addr( serverIP.c_str() );
 
 	if( connect( mySocket, (sockaddr*) &serv_addr, sizeof(serv_addr) ) == -1 )
 	{
@@ -114,7 +122,7 @@ int IRCClient::connectChannel( std::string name )
 	std::string buffer;
 
 	std::cout << "### Setting nick name." << std::endl;
-	buffer = "NICK " + name + "\r\n";
+	buffer = "NICK " + nickName + "\r\n";
 	write( mySocket, buffer.c_str(), buffer.size() );
 
 	// Check if setting nick was successful
@@ -122,15 +130,15 @@ int IRCClient::connectChannel( std::string name )
 	// negative: "Nickname is already in use"
 
 	std::cout << "### Setting user name." << std::endl;
-	buffer = "USER " + name;
-	buffer += " " + name + "_hst";
-	buffer += " " + name + "_srv";
-	buffer += " :" + name + "\r\n";
+	buffer = "USER " + nickName;
+	buffer += " " + nickName + "_hst";
+	buffer += " " + nickName + "_srv";
+	buffer += " :" + nickName + "\r\n";
 	write( mySocket, buffer.c_str(), buffer.size() );
 
 	sleep( 3 );
 	std::cout << "### Joining channel." << std::endl;
-	buffer = "JOIN #m6\r\n";
+	buffer = "JOIN " + channel + "\r\n";
 	write( mySocket, buffer.c_str(), buffer.size() );
 
 	std::cout << "### Connected." << std::endl;

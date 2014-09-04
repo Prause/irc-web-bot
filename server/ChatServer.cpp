@@ -4,9 +4,11 @@
 #include <thread>
 #include <fstream>
 
-ChatServer::ChatServer( unsigned int portNo )
-	: TCPSocketServer( portNo )
-{}
+ChatServer::ChatServer()
+	: TCPSocketServer()
+{
+	config.loadConfigFile( "config.ini" );
+}
 
 void ChatServer::addLogLine( std::string msg )
 {
@@ -19,7 +21,8 @@ void ChatServer::addLogLine( std::string msg )
 
 	// also write to logfile
 	std::ofstream file;
-	file.open( "RobotLog.txt", std::ofstream::app );
+	file.open( config.getStringParameter( "msgLogFile" ),
+			std::ofstream::app );
 	if( file.good() )
 	{
 		file << msg << std::endl;
@@ -29,9 +32,16 @@ void ChatServer::addLogLine( std::string msg )
 
 bool ChatServer::connect()
 {
-	if( TCPSocketServer::connect() )
+	if( TCPSocketServer::connect(config.getIntParameter("wsServerPort")) )
 	{
-		if( ircConnection.connectChannel("Robot") ) return true;
+		if( ircConnection.connectChannel(
+					config.getStringParameter( "ircServerIP" ),
+					config.getIntParameter( "ircServerPort" ),
+					config.getStringParameter( "ircChannel" ),
+					config.getStringParameter( "ircBotNick" ) ))
+		{
+			return true;
+		}
 		else close();
 	}
 	return false;

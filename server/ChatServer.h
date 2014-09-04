@@ -7,15 +7,17 @@
 #include "TCPSocketServer.h"
 #include "WebSocketConnection.h"
 #include "IRCClient.h"
+#include "Configurator.h"
 
 class ChatServer : public TCPSocketServer
 {
 	std::list<WebSocketConnection*> participants;
 	IRCClient ircConnection;
 	std::list<std::string> msgLog;
+	Configurator config;
 
 	public:
-	ChatServer( unsigned int portNo );
+	ChatServer();
 	bool connect();
 	void ircLoop();
 	void listeningLoop();

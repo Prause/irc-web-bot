@@ -5,12 +5,7 @@
 int main(int argc, char *argv[])
 {
 
-	if (argc < 2) {
-		std::cerr << "ERROR, no port provided\n";
-		return 1;
-	}
-
-	ChatServer server( std::stoi(argv[1]) );
+	ChatServer server;
 	if( server.connect() )
 	{
 		server.listeningLoop();
@@ -18,6 +13,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		std::cerr << "Error: Could not start ChatServer.\n";
+		return 1;
 	}
 
 	return 0; 
