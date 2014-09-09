@@ -94,6 +94,7 @@ std::string WebSocketConnection::getWebsocketMsg()
 	if( (myBuff.peekAt( 0 ) & 0x80) == 0 )
 	{
 		std::cout << "fragmented" << std::endl;
+		putLine( "Message was to long to be received." );
 		return ""; // TODO at least remove package from queue
 	}
 
@@ -115,6 +116,8 @@ std::string WebSocketConnection::getWebsocketMsg()
 
 	if( myBuff.getCount() < 2 + lengthOffset + maskLength + msgLength || msgLength == 127 )
 	{
+		std::cout << "over-length" << std::endl;
+		putLine( "Message was to long to be received." );
 		return ""; // TODO at least remove package from queue
 	}
 	
@@ -137,6 +140,12 @@ std::string WebSocketConnection::getWebsocketMsg()
 void WebSocketConnection::putLine(std::string line)
 {
 	if( !isGood() ) return;
+
+	if(line.size() >= 126)
+	{
+		line = line.substr( 0, 125 - 6 );
+		line += " [...]";
+	}
 
 	if(line.size() < 126)
 	{
