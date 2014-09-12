@@ -34,6 +34,10 @@ bool ChatServer::connect()
 {
 	if( TCPSocketServer::connect(config.getIntParameter("wsServerPort")) )
 	{
+		if( ! config.getIntParameter("useIrc") ) {
+			std::cout << "No IRC channel connection." << std::endl;
+			return true;
+		}
 		if( ircConnection.connectChannel(
 					config.getStringParameter( "ircServerIP" ),
 					config.getIntParameter( "ircServerPort" ),
